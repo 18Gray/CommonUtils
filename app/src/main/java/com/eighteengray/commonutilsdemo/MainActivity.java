@@ -3,6 +3,7 @@ package com.eighteengray.commonutilsdemo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -15,8 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity
-{
+public class MainActivity extends AppCompatActivity {
     @BindView(R.id.tv1)
     TextView tv1;
     @BindView(R.id.tv2)
@@ -25,8 +25,7 @@ public class MainActivity extends AppCompatActivity
     TextView tv3;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -43,15 +42,36 @@ public class MainActivity extends AppCompatActivity
         tv3.setText("screenWidth=" + screenWidth + "  " + "screenHeight=" + screenHeight);
 
         ListView listView = new ListView(MainActivity.this);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
             }
         });
 
+        //监听虚拟键盘是否显示
+        // activityRoot是该Activity的最外层Layout
+        final View activityRootView = findViewById(R.id.activity_main);
+        //给该layout设置监听，监听其布局发生变化事件
+
+        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener()
+        {
+            @Override
+            public void onGlobalLayout ()
+            {
+                //比较activityRootView的根布局与activityRootView的大小，activityRootView因为虚拟键盘的弹出而变小了
+                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+                if (heightDiff > 100)
+                {
+                    //大小超过100时，一般为显示虚拟键盘事件
+
+                } else
+                {
+                    //大小小于100时，为不显示虚拟键盘或虚拟键盘隐藏
+
+                }
+            }
+        });
 
 
     }
