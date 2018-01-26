@@ -13,12 +13,51 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+    productFlavors {
+        create('all') {
         }
     }
+    publishNonDefault true
+
+
+    signingConfigs {
+        release {
+            storeFile file("android-release-key.keystore")
+            storePassword "luozhifan@tencent-2010"
+            keyAlias "androidreleasekey"
+            keyPassword "luozhifan@tencent-2010"
+        }
+        debug {
+            storeFile file("android-release-key.keystore")
+            storePassword "luozhifan@tencent-2010"
+            keyAlias "androidreleasekey"
+            keyPassword "luozhifan@tencent-2010"
+        }
+    }
+
+    buildTypes {
+        release {
+            // 混淆文件的位置
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // 是否进行混淆
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            zipAlignEnabled true
+            buildConfigField 'boolean','isShowLog',isShowLog
+        }
+        debug {
+            signingConfig signingConfigs.debug
+            multiDexEnabled true
+            debuggable true
+            buildConfigField 'boolean','isShowLog',isShowLog
+        }
+    }
+}
+
+configurations {
+    allDebug
+    allRelease
 }
 
 dependencies {
