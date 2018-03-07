@@ -20,7 +20,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+//    compile fileTree(include: ['*.jar'], dir: 'libs')
 //    compile project(':commonutillibrary')
     //依赖library
 //    debugCompile project(path: ':commonutillibrary', configuration: 'allDebug')
