@@ -11,17 +11,17 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-    /*buildTypes {
+    buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }*/
+    }
 }
 
 dependencies {
-//    compile fileTree(include: ['*.jar'], dir: 'libs')
-//    compile project(':commonutillibrary')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile project(':commonutillibrary')
     //依赖library
 //    debugCompile project(path: ':commonutillibrary', configuration: 'allDebug')
 //    releaseCompile project(path: ':commonutillibrary', configuration: 'allRelease')
