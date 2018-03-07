@@ -27,11 +27,11 @@ android {
         }
     }*/
 
-    productFlavors {
+    /*productFlavors {
         create('all') {
         }
     }
-    publishNonDefault true
+    publishNonDefault true*/
 
 
     buildTypes {
@@ -59,6 +59,6 @@ android {
 }*/
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+//    compile fileTree(include: ['*.jar'], dir: 'libs')
 //    compile "com.android.support:support-v4:$rootProject.ext.supportLibraryVersion"
 }
