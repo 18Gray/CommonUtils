@@ -23,6 +23,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':commonutillibrary')
     //依赖library
-    debugCompile project(path: ':commonutillibrary', configuration: 'allDebug')
-    releaseCompile project(path: ':commonutillibrary', configuration: 'allRelease')
+//    debugCompile project(path: ':commonutillibrary', configuration: 'allDebug')
+//    releaseCompile project(path: ':commonutillibrary', configuration: 'allRelease')
 }
