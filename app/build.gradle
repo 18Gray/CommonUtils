@@ -11,22 +11,21 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-    buildTypes {
+    /*buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
+    }*/
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':commonutillibrary')
-    compile "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion"
-    androidTestCompile("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
+//    compile project(':commonutillibrary')
+    /*androidTestCompile("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:4.12'*/
     //依赖library
 //    debugCompile project(path: ':commonutillibrary', configuration: 'allDebug')
 //    releaseCompile project(path: ':commonutillibrary', configuration: 'allRelease')
