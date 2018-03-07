@@ -1,13 +1,11 @@
 package com.eighteengray.commonutillibrary;
 
 import android.util.SparseArray;
-
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * Created by yudunfu on 16-6-15.
- */
+
+
 public final class CollectionUtils {
 
     public static boolean valid(Collection<?> collection) {

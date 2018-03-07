@@ -28,6 +28,6 @@ dependencies {
     })
     testCompile 'junit:junit:4.12'
     //依赖library
-    debugCompile project(path: ':commonutillibrary', configuration: 'allDebug')
-    releaseCompile project(path: ':commonutillibrary', configuration: 'allRelease')
+//    debugCompile project(path: ':commonutillibrary', configuration: 'allDebug')
+//    releaseCompile project(path: ':commonutillibrary', configuration: 'allRelease')
 }
