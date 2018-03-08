@@ -14,21 +14,10 @@ android {
 
 
     buildTypes {
-        /*release {
-            // 混淆文件的位置
+        release {
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            // 是否进行混淆
-            signingConfig signingConfigs.release
-            minifyEnabled true
-            zipAlignEnabled true
-            buildConfigField 'boolean','isShowLog',isShowLog
         }
-        debug {
-            signingConfig signingConfigs.debug
-            multiDexEnabled true
-            debuggable true
-            buildConfigField 'boolean','isShowLog',isShowLog
-        }*/
     }
 }
 
