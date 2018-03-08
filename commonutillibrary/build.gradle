@@ -13,7 +13,7 @@ android {
     }
 
     signingConfigs {
-        release {
+        /*release {
             storeFile file("android-release-key.keystore")
             storePassword "luozhifan@tencent-2010"
             keyAlias "androidreleasekey"
@@ -24,7 +24,7 @@ android {
             storePassword "luozhifan@tencent-2010"
             keyAlias "androidreleasekey"
             keyPassword "luozhifan@tencent-2010"
-        }
+        }*/
     }
 
     productFlavors {
