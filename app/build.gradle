@@ -9,7 +9,6 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
    /* buildTypes {
         release {
@@ -20,7 +19,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+//    compile fileTree(include: ['*.jar'], dir: 'libs')
 //    compile project(':commonutillibrary')
     //依赖library
 //    debugCompile project(path: ':commonutillibrary', configuration: 'allDebug')
