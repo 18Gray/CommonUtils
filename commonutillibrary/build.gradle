@@ -12,8 +12,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
-    signingConfigs {
-        /*release {
+   /* signingConfigs {
+        release {
             storeFile file("android-release-key.keystore")
             storePassword "luozhifan@tencent-2010"
             keyAlias "androidreleasekey"
@@ -24,8 +24,8 @@ android {
             storePassword "luozhifan@tencent-2010"
             keyAlias "androidreleasekey"
             keyPassword "luozhifan@tencent-2010"
-        }*/
-    }
+        }
+    }*/
 
     /*productFlavors {
         create('all') {
@@ -34,8 +34,8 @@ android {
     publishNonDefault true*/
 
 
-    buildTypes {
-        /*release {
+    /*buildTypes {
+        release {
             // 混淆文件的位置
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             // 是否进行混淆
@@ -49,8 +49,8 @@ android {
             multiDexEnabled true
             debuggable true
             buildConfigField 'boolean','isShowLog',isShowLog
-        }*/
-    }
+        }
+    }*/
 }
 
 /*configurations {
@@ -59,6 +59,6 @@ android {
 }*/
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+//    compile fileTree(include: ['*.jar'], dir: 'libs')
 //    compile "com.android.support:support-v4:$rootProject.ext.supportLibraryVersion"
 }
