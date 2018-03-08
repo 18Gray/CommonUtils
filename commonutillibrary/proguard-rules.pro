@@ -20,12 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--dontnote android.net.http.HttpResponseCache
-
--dontnote android.net.http.SslCertificate.*
--dontnote android.net.http.SslError
--dontnote android.net.http.SslCertificate
--dontnote android.net.http.HttpResponseCache
--dontnote android.net.http.HttpResponseCache
--dontnote android.net.http.HttpResponseCache
+-dontnote android.net.http.*
+-dontnote org.apache.commons.codec.**
+-dontnote org.apache.http.**
 
