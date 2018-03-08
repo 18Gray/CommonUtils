@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-dontnote android.net.http.HttpResponseCache
+
+-dontnote android.net.http.SslCertificate.*
+-dontnote android.net.http.SslError
+-dontnote android.net.http.SslCertificate
+-dontnote android.net.http.HttpResponseCache
+-dontnote android.net.http.HttpResponseCache
+-dontnote android.net.http.HttpResponseCache
+
