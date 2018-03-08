@@ -27,11 +27,11 @@ android {
         }*/
     }
 
-    productFlavors {
+    /*productFlavors {
         create('all') {
         }
     }
-    publishNonDefault true
+    publishNonDefault true*/
 
 
     buildTypes {
