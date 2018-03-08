@@ -9,9 +9,10 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
-   /* signingConfigs {
+    /*signingConfigs {
         release {
             storeFile file("android-release-key.keystore")
             storePassword "luozhifan@tencent-2010"
@@ -33,8 +34,8 @@ android {
     publishNonDefault true*/
 
 
-    /*buildTypes {
-        release {
+    buildTypes {
+        /*release {
             // 混淆文件的位置
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             // 是否进行混淆
@@ -48,8 +49,8 @@ android {
             multiDexEnabled true
             debuggable true
             buildConfigField 'boolean','isShowLog',isShowLog
-        }
-    }*/
+        }*/
+    }
 }
 
 /*configurations {
