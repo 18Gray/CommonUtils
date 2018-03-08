@@ -12,27 +12,6 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
-    /*signingConfigs {
-        release {
-            storeFile file("android-release-key.keystore")
-            storePassword "luozhifan@tencent-2010"
-            keyAlias "androidreleasekey"
-            keyPassword "luozhifan@tencent-2010"
-        }
-        debug {
-            storeFile file("android-release-key.keystore")
-            storePassword "luozhifan@tencent-2010"
-            keyAlias "androidreleasekey"
-            keyPassword "luozhifan@tencent-2010"
-        }
-    }*/
-
-    /*productFlavors {
-        create('all') {
-        }
-    }
-    publishNonDefault true*/
-
 
     buildTypes {
         /*release {
@@ -52,11 +31,6 @@ android {
         }*/
     }
 }
-
-/*configurations {
-    allDebug
-    allRelease
-}*/
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
