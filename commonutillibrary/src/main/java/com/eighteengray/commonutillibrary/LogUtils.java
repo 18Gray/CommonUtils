@@ -17,7 +17,7 @@ public class LogUtils
 		return BuildConfig.DEBUG;
 	}
 
-	private static String createLog( String log ) {
+	private static String createLog(String log) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(methodName);
 		buffer.append("(").append(className).append(":").append(lineNumber).append(")");

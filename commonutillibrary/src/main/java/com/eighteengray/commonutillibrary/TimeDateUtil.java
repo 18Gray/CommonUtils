@@ -46,9 +46,6 @@ public class TimeDateUtil
     }
 
 
-
-
-
     /**
      * Long转Date
      * @param currentTime
@@ -62,7 +59,6 @@ public class TimeDateUtil
         return date;
     }
 
-
     /**
      * Date转Long
      * @param date
@@ -72,9 +68,6 @@ public class TimeDateUtil
     {
         return date.getTime();
     }
-
-
-
 
 
     /**
@@ -111,7 +104,6 @@ public class TimeDateUtil
             return currentTime;
         }
     }
-
 
 
 

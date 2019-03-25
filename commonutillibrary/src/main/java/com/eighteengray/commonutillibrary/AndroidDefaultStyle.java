@@ -44,6 +44,7 @@ public class AndroidDefaultStyle
 	 style="?android:attr/progressBarStyleSmall"
 	 style="?android:attr/progressBarStyleSmallTitle"
 
+
 	 分隔符样式:
 	 横向：
 	 <View
@@ -73,23 +74,5 @@ public class AndroidDefaultStyle
 	 android:layout_height="?android:attr/windowTitleSize"
 	 android:background="?android:attr/windowBackground"
 
-
-	 修改Activity的标题栏样式
-	 如在styles.xml中增加
-	 <resources> 
-	     <style name="AutoWindowTitleBackground"> 
-	         <item name="android:background">#778899</item> 
-	     </style> 
-	     <style name="autoWindowTitlebar" parent="android:Theme"> 
-	         <item name="android:windowTitleSize">32dp</item>
-	         <item name="android:windowTitleBackgroundStyle">@style/AutoWindowTitleBackground</item>
-	     </style> 
-	 </resources>
-	 接着再修改AndroidManifest.xml文件，找到要自定义标题栏的Activity，添加上android:theme值，比如：
-	 <activity android:name=".MainActivity" android:theme="@style/autoWindowTitlebar">
-
-	  
-	 去掉所有Activity界面的标题栏
-	 修改AndroidManifest.xml
-	 在application 标签中添加android:theme=”@android:style/Theme.NoTitleBar”*/
+    */
 }
