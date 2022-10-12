@@ -1,34 +1,29 @@
 package com.eighteengray.commonutillibrary;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
- * 加密相关工具类
+ * 加密解密工具类
  */
-public class EncryptUtil
+public class EncryptUtils
 {
-	//md5
 	public static String encryptMd5(String string)
 	{
 		byte[] hash;
 		try
 		{
 			hash = MessageDigest.getInstance("MD5").digest(string.getBytes("UTF-8"));
-		} catch (NoSuchAlgorithmException e)
-		{
+		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException("Huh, MD5 should be supported?", e);
-		} catch (UnsupportedEncodingException e)
-		{
+		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("Huh, UTF-8 should be supported?", e);
 		}
 
@@ -44,8 +39,7 @@ public class EncryptUtil
 		return hex.toString();
 	}
 
-
-	public static String convertMD5(String source)
+	public static String decryptMD5(String source)
 	{
 		char[] a = source.toCharArray();
 		for (int i = 0; i < a.length; i++){
@@ -55,13 +49,7 @@ public class EncryptUtil
 		return s;
 	}
 
-	public static String decryptMD5(String source)
-	{
-		return convertMD5(convertMD5(source));
-	}
 
-
-	//DES
 	private final static String DES = "DES";
 	private static byte[] encryptDES(byte[] data, byte[] key) throws Exception
 	{
@@ -97,42 +85,23 @@ public class EncryptUtil
 	}
 
 
-	//AES
-	private static byte[] iv = { 'c', 'i', 'd', 't', 'e', 'c', 'h', '1' };
-	public static String encryptDES(String encryptString, String encryptKey) throws Exception
-	{
-		IvParameterSpec zeroIv = new IvParameterSpec(iv);
-		SecretKeySpec key = new SecretKeySpec(encryptKey.getBytes(), "DES");
-		Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-		cipher.init(Cipher.ENCRYPT_MODE, key, zeroIv);
-		byte[] encryptedData = cipher.doFinal(encryptString.getBytes());
-		return Base64.encode(encryptedData);
-	}
-
-
-
 	//Base64
 	public static String encryptBase64(String data, String key) throws Exception
 	{
 		byte[] bt = encryptDES(data.getBytes(), key.getBytes());
 		String strs = Base64.encode(bt);
-		// String strs = Base64.encodeToString(bt, Base64.DEFAULT);
 		return strs;
 	}
 
-
-	public static String decryptBase64(String data, String key) throws IOException,
-			Exception
+	public static String decryptBase64(String data, String key) throws Exception
 	{
-		if (data == null)
+		if (data == null) {
 			return null;
+		}
 		byte[] buf = Base64.decode(data);
 		byte[] bt = decryptDES(buf, key.getBytes());
 		return new String(bt);
 	}
-
-
-
 
 	public static class Base64
 	{

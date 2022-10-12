@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.Application;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -12,10 +13,15 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Parcelable;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,30 +29,29 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 
 /**
  * 系统信息相关工具类
  */
-public class SystemUtils
-{
+public class SystemUtils {
     //应用相关
     /**
      * 获取当前应用程序名称
      */
-    public static String getAppName(Context context)
-    {
-        try
-        {
+    public static String getAppName(Context context) {
+        try {
             PackageManager packageManager = context.getPackageManager();
             PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
             int labelRes = packageInfo.applicationInfo.labelRes;
             return context.getResources().getString(labelRes);
-        } catch (NameNotFoundException e)
-        {
+        } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
         return null;
@@ -56,14 +61,11 @@ public class SystemUtils
     /**
      * 获取当前应用程序的版本名称
      */
-    public static String getAppVersion(Context context)
-    {
+    public static String getAppVersion(Context context) {
         String version = "0";
-        try
-        {
+        try {
             version = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
-        } catch (NameNotFoundException e)
-        {
+        } catch (NameNotFoundException e) {
             throw new RuntimeException(SystemUtils.class.getName() + "the application not found");
         }
         return version;
@@ -73,14 +75,11 @@ public class SystemUtils
     /**
      * 获取当前应用程序的版本号
      */
-    public static int getAppVersionCode(Context context)
-    {
+    public static int getAppVersionCode(Context context) {
         int version = 0;
-        try
-        {
+        try {
             version = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
-        } catch (NameNotFoundException e)
-        {
+        } catch (NameNotFoundException e) {
             throw new RuntimeException(SystemUtils.class.getName() + "the application not found");
         }
         return version;
@@ -90,20 +89,15 @@ public class SystemUtils
     /**
      * 判断当前应用程序是否在后台运行
      */
-    public static boolean isBackground(Context context)
-    {
+    public static boolean isBackground(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-        for (RunningAppProcessInfo appProcess : appProcesses)
-        {
-            if (appProcess.processName.equals(context.getPackageName()))
-            {
-                if (appProcess.importance == RunningAppProcessInfo.IMPORTANCE_BACKGROUND)
-                {
+        for (RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.processName.equals(context.getPackageName())) {
+                if (appProcess.importance == RunningAppProcessInfo.IMPORTANCE_BACKGROUND) {
                     // 后台运行
                     return true;
-                } else
-                {
+                } else {
                     // 前台运行
                     return false;
                 }
@@ -112,20 +106,155 @@ public class SystemUtils
         return false;
     }
 
+    /**
+     *  获取当前进程名称
+     * */
+    public static String getCurrentProcessName(@NonNull Context context) {
+        String currentProcessName = "";
+        //1)通过Application的API获取当前进程名
+        currentProcessName = getCurrentProcessNameByApplication();
+        if (!TextUtils.isEmpty(currentProcessName)) {
+            return currentProcessName;
+        }
+        //2)通过反射ActivityThread获取当前进程名
+        currentProcessName = getCurrentProcessNameByActivityThread();
+        if (!TextUtils.isEmpty(currentProcessName)) {
+            return currentProcessName;
+        }
+        //3)通过ActivityManager获取当前进程名
+        currentProcessName = getCurrentProcessNameByActivityManager(context);
+
+        return currentProcessName;
+    }
+
+    /**
+     * 通过Application新的API获取进程名，无需反射，无需IPC，效率最高。
+     */
+    public static String getCurrentProcessNameByApplication() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return Application.getProcessName();
+        }
+        return null;
+    }
+
+    /**
+     * 通过反射ActivityThread获取进程名，避免了ipc
+     */
+    public static String getCurrentProcessNameByActivityThread() {
+        String processName = null;
+        try {
+            final Method declaredMethod = Class.forName("android.app.ActivityThread", false, Application.class.getClassLoader())
+                    .getDeclaredMethod("currentProcessName", (Class<?>[]) new Class[0]);
+            declaredMethod.setAccessible(true);
+            final Object invoke = declaredMethod.invoke(null, new Object[0]);
+            if (invoke instanceof String) {
+                processName = (String) invoke;
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return processName;
+    }
+
+    /**
+     * 通过ActivityManager 获取进程名，需要IPC通信
+     */
+    public static String getCurrentProcessNameByActivityManager(@NonNull Context context) {
+        int pid = android.os.Process.myPid();
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (am != null) {
+            List<RunningAppProcessInfo> runningAppList = am.getRunningAppProcesses();
+            if (runningAppList != null) {
+                for (RunningAppProcessInfo processInfo : runningAppList) {
+                    if (processInfo.pid == pid) {
+                        return processInfo.processName;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 判断是否有网络连接
+     * @param context
+     * @return
+     */
+    public boolean isNetworkConnected(Context context) {
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            if (mNetworkInfo != null) {
+                return mNetworkInfo.isAvailable();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断WIFI网络是否可用
+     * @param context
+     * @return
+     */
+    public boolean isWifiConnected(Context context) {
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mWiFiNetworkInfo = mConnectivityManager
+                    .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (mWiFiNetworkInfo != null) {
+                return mWiFiNetworkInfo.isAvailable();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断MOBILE网络是否可用
+     * @param context
+     * @return
+     */
+    public boolean isMobileConnected(Context context) {
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mMobileNetworkInfo = mConnectivityManager
+                    .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if (mMobileNetworkInfo != null) {
+                return mMobileNetworkInfo.isAvailable();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断当前网络的连接类型
+     * @param context
+     * @return
+     */
+    public static int getConnectedType(Context context) {
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            if (mNetworkInfo != null && mNetworkInfo.isAvailable()) {
+                return mNetworkInfo.getType();
+            }
+        }
+        return -1;
+    }
 
     /**
      * 获取应用程序的签名
      * @param context
      * @param pkgName
      */
-    public static String getSign(Context context, String pkgName)
-    {
-        try
-        {
+    public static String getSign(Context context, String pkgName) {
+        try {
             PackageInfo pis = context.getPackageManager().getPackageInfo(pkgName, PackageManager.GET_SIGNATURES);
             return hexdigest(pis.signatures[0].toByteArray());
-        } catch (NameNotFoundException e)
-        {
+        } catch (NameNotFoundException e) {
             throw new RuntimeException(SystemUtils.class.getName() + "the "
                     + pkgName + "'s application not found");
         }
@@ -137,28 +266,22 @@ public class SystemUtils
      * @param paramArrayOfByte
      * @return
      */
-    private static String hexdigest(byte[] paramArrayOfByte)
-    {
-        final char[] hexDigits =
-                {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
-        try
-        {
+    private static String hexdigest(byte[] paramArrayOfByte) {
+        final char[] hexDigits = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
+        try {
             MessageDigest localMessageDigest = MessageDigest.getInstance("MD5");
             localMessageDigest.update(paramArrayOfByte);
             byte[] arrayOfByte = localMessageDigest.digest();
             char[] arrayOfChar = new char[32];
-            for (int i = 0, j = 0; ; i++, j++)
-            {
-                if (i >= 16)
-                {
+            for (int i = 0, j = 0; ; i++, j++) {
+                if (i >= 16) {
                     return new String(arrayOfChar);
                 }
                 int k = arrayOfByte[i];
                 arrayOfChar[j] = hexDigits[(0xF & k >>> 4)];
                 arrayOfChar[++j] = hexDigits[(k & 0xF)];
             }
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
         }
         return "";
     }
@@ -174,8 +297,7 @@ public class SystemUtils
      * @return
      */
     @SuppressLint("MissingPermission")
-    public static String getPhoneIMEI(Context cxt)
-    {
+    public static String getPhoneIMEI(Context cxt) {
         TelephonyManager tm = (TelephonyManager) cxt.getSystemService(Context.TELEPHONY_SERVICE);
         return tm.getDeviceId();
     }
@@ -185,9 +307,8 @@ public class SystemUtils
      * 获取手机系统SDK版本
      * @return
      */
-    public static int getSDKVersion()
-    {
-        return android.os.Build.VERSION.SDK_INT;
+    public static int getSDKVersion() {
+        return Build.VERSION.SDK_INT;
     }
 
 
@@ -195,54 +316,42 @@ public class SystemUtils
      * 获取手机系统内核版本
      * @return
      */
-    public static String getKernelVersion()
-    {
+    public static String getKernelVersion() {
         String kernelVersion = "";
         InputStream inputStream = null;
-        try
-        {
+        try {
             inputStream = new FileInputStream("/proc/version");
-        } catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
             return kernelVersion;
         }
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream), 8 * 1024);
         String info = "";
         String line = "";
-        try
-        {
-            while ((line = bufferedReader.readLine()) != null)
-            {
+        try {
+            while ((line = bufferedReader.readLine()) != null) {
                 info += line;
             }
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
-        } finally
-        {
-            try
-            {
+        } finally {
+            try {
                 bufferedReader.close();
                 inputStream.close();
-            } catch (IOException e)
-            {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        try
-        {
-            if (info != "")
-            {
+        try {
+            if (info != "") {
                 final String keyword = "version ";
                 int index = info.indexOf(keyword);
                 line = info.substring(index + keyword.length());
                 index = line.indexOf(" ");
                 kernelVersion = line.substring(0, index);
             }
-        } catch (IndexOutOfBoundsException e)
-        {
+        } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         }
         return kernelVersion;
@@ -254,8 +363,7 @@ public class SystemUtils
      * @param context
      * @return
      */
-    public static boolean isSleeping(Context context)
-    {
+    public static boolean isSleeping(Context context) {
         KeyguardManager kgMgr = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         boolean isSleeping = kgMgr.inKeyguardRestrictedInputMode();
         return isSleeping;
@@ -267,8 +375,7 @@ public class SystemUtils
      * @param cxt 应用上下文对象context
      * @return 当前内存大小
      */
-    public static int getDeviceUsableMemory(Context cxt)
-    {
+    public static int getDeviceUsableMemory(Context cxt) {
         ActivityManager am = (ActivityManager) cxt.getSystemService(Context.ACTIVITY_SERVICE);
         MemoryInfo mi = new MemoryInfo();
         am.getMemoryInfo(mi);
@@ -282,24 +389,20 @@ public class SystemUtils
      * @return 被清理的数量
      */
     @SuppressLint("MissingPermission")
-    public static int gc(Context cxt)
-    {
+    public static int gc(Context cxt) {
         long i = getDeviceUsableMemory(cxt);
         int count = 0; // 清理掉的进程数
         ActivityManager am = (ActivityManager) cxt.getSystemService(Context.ACTIVITY_SERVICE);
         // 获取正在运行的service列表
         List<RunningServiceInfo> serviceList = am.getRunningServices(100);
         if (serviceList != null)
-            for (RunningServiceInfo service : serviceList)
-            {
+            for (RunningServiceInfo service : serviceList) {
                 if (service.pid == android.os.Process.myPid())
                     continue;
-                try
-                {
+                try {
                     android.os.Process.killProcess(service.pid);
                     count++;
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.getStackTrace();
                     continue;
                 }
@@ -308,22 +411,17 @@ public class SystemUtils
         // 获取正在运行的进程列表
         List<RunningAppProcessInfo> processList = am.getRunningAppProcesses();
         if (processList != null)
-            for (RunningAppProcessInfo process : processList)
-            {
+            for (RunningAppProcessInfo process : processList) {
                 // 一般数值大于RunningAppProcessInfo.IMPORTANCE_SERVICE的进程都长时间没用或者空进程了
                 // 一般数值大于RunningAppProcessInfo.IMPORTANCE_VISIBLE的进程都是非可见进程，也就是在后台运行着
-                if (process.importance > RunningAppProcessInfo.IMPORTANCE_VISIBLE)
-                {
+                if (process.importance > RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
                     // pkgList 得到该进程下运行的包名
                     String[] pkgList = process.pkgList;
-                    for (String pkgName : pkgList)
-                    {
-                        try
-                        {
+                    for (String pkgName : pkgList) {
+                        try {
                             am.killBackgroundProcesses(pkgName);
                             count++;
-                        } catch (Exception e)
-                        { // 防止意外发生
+                        } catch (Exception e) { // 防止意外发生
                             e.getStackTrace();
                             continue;
                         }
@@ -332,8 +430,6 @@ public class SystemUtils
             }
         return count;
     }
-
-
 
 
 
@@ -346,8 +442,7 @@ public class SystemUtils
      * @param title
      * @param cls
      */
-    public void createDeskShortCut(Context cxt, int icon, String title, Class<?> cls)
-    {
+    public void createDeskShortCut(Context cxt, int icon, String title, Class<?> cls) {
         // 创建快捷方式的Intent
         Intent shortcutIntent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
         // 不允许重复创建
@@ -373,8 +468,7 @@ public class SystemUtils
      * @param context
      * @param file
      */
-    public static void installApk(Context context, File file)
-    {
+    public static void installApk(Context context, File file) {
         Intent intent = new Intent();
         intent.setAction("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
@@ -385,12 +479,70 @@ public class SystemUtils
         context.startActivity(intent);
     }
 
+    /**
+     * Uninstall the app.
+     * <p>Target APIs greater than 25 must hold
+     * Must hold {@code <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />}</p>
+     *
+     * @param packageName The name of the package.
+     */
+    public static void uninstallApp(Context context, String packageName) {
+        Intent intent = new Intent(Intent.ACTION_DELETE);
+        intent.setData(Uri.parse("package:" + packageName));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    /**
+     * Return whether the app is installed.
+     * @param pkgName The name of the package.
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    public static boolean isAppInstalled(Context context, String pkgName) {
+        PackageManager pm = context.getPackageManager();
+        try {
+            return pm.getApplicationInfo(pkgName, 0).enabled;
+        } catch (NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Return whether application is running.
+     *
+     * @param pkgName The name of the package.
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    public static boolean isAppRunning(Context context, String pkgName) {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (am != null) {
+            List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(Integer.MAX_VALUE);
+            if (taskInfo != null && taskInfo.size() > 0) {
+                for (ActivityManager.RunningTaskInfo aInfo : taskInfo) {
+                    if (aInfo.baseActivity != null) {
+                        if (pkgName.equals(aInfo.baseActivity.getPackageName())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            List<RunningServiceInfo> serviceInfo = am.getRunningServices(Integer.MAX_VALUE);
+            if (serviceInfo != null && serviceInfo.size() > 0) {
+                for (RunningServiceInfo aInfo : serviceInfo) {
+                    if (pkgName.equals(aInfo.service.getPackageName())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
     /**
      * 回到home，后台运行
      */
-    public static void goHome(Context context)
-    {
+    public static void goHome(Context context) {
         Intent mHomeIntent = new Intent(Intent.ACTION_MAIN);
         mHomeIntent.addCategory(Intent.CATEGORY_HOME);
         mHomeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
@@ -402,8 +554,7 @@ public class SystemUtils
     /**
      * 调用系统发送短信，跳转发短信界面
      */
-    public static void sendSMS(Context cxt, String smsBody)
-    {
+    public static void sendSMS(Context cxt, String smsBody) {
         Uri smsToUri = Uri.parse("smsto:");
         Intent intent = new Intent(Intent.ACTION_SENDTO, smsToUri);
         intent.putExtra("sms_body", smsBody);
@@ -418,8 +569,7 @@ public class SystemUtils
      * @param sentIntent
      * @param deliveryIntent
      */
-    public static void sendSMSBackground(String destinationAddress, String text, PendingIntent sentIntent, PendingIntent deliveryIntent)
-    {
+    public static void sendSMSBackground(String destinationAddress, String text, PendingIntent sentIntent, PendingIntent deliveryIntent) {
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(destinationAddress, null, text, sentIntent, deliveryIntent);
     }
@@ -431,8 +581,7 @@ public class SystemUtils
      * @param mobileList
      * @param content
      */
-    public static void sendGroupSMS(Context context, ArrayList<String> mobileList, String content)
-    {
+    public static void sendGroupSMS(Context context, ArrayList<String> mobileList, String content) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < mobileList.size(); i++)
         {
@@ -448,7 +597,6 @@ public class SystemUtils
         intent.putExtra("sms_body", content);
         intent.setType("vnd.android-dir/mms-sms");
         context.startActivity(intent);
-
     }
 
 
@@ -457,8 +605,7 @@ public class SystemUtils
      * @param context
      * @param emails
      */
-    public static void sendEmail(Context context, String[] emails)
-    {
+    public static void sendEmail(Context context, String[] emails) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822"); // 设置邮件格式
         intent.putExtra(Intent.EXTRA_EMAIL, emails); // 接收人
@@ -468,28 +615,24 @@ public class SystemUtils
         context.startActivity(Intent.createChooser(intent, "请选择邮件类应用"));
     }
 
-
     /**
      * android获取一个用于打开HTML文件的intent
      * @param param
      * @return
      */
-    public static Intent getHtmlFileIntent(String param)
-    {
+    public static Intent getHtmlFileIntent(String param) {
         Uri uri = Uri.parse(param).buildUpon().encodedAuthority("com.android.htmlfileprovider").scheme("content").encodedPath(param).build();
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.setDataAndType(uri, "text/html");
         return intent;
     }
 
-
     /**
      * android获取一个用于打开PDF文件的intent
      * @param param
      * @return
      */
-    public static Intent getPdfFileIntent(String param)
-    {
+    public static Intent getPdfFileIntent(String param) {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -498,38 +641,32 @@ public class SystemUtils
         return intent;
     }
 
-
     /**
      * android获取一个用于打开文本文件的intent
      * @param param
      * @param paramBoolean
      * @return
      */
-    public static Intent getTextFileIntent(String param, boolean paramBoolean)
-    {
+    public static Intent getTextFileIntent(String param, boolean paramBoolean) {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (paramBoolean)
-        {
+        if (paramBoolean) {
             Uri uri1 = Uri.parse(param);
             intent.setDataAndType(uri1, "text/plain");
-        } else
-        {
+        } else {
             Uri uri2 = Uri.fromFile(new File(param));
             intent.setDataAndType(uri2, "text/plain");
         }
         return intent;
     }
 
-
     /**
      * android获取一个用于打开音频文件的intent
      * @param param
      * @return
      */
-    public static Intent getAudioFileIntent(String param)
-    {
+    public static Intent getAudioFileIntent(String param) {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("oneshot", 0);
@@ -539,14 +676,12 @@ public class SystemUtils
         return intent;
     }
 
-
     /**
      * android获取一个用于打开视频文件的intent
      * @param param
      * @return
      */
-    public static Intent getVideoFileIntent(String param)
-    {
+    public static Intent getVideoFileIntent(String param) {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("oneshot", 0);
@@ -556,14 +691,12 @@ public class SystemUtils
         return intent;
     }
 
-
     /**
      * android获取一个用于打开CHM文件的intent
      * @param param
      * @return
      */
-    public static Intent getChmFileIntent(String param)
-    {
+    public static Intent getChmFileIntent(String param) {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -572,14 +705,12 @@ public class SystemUtils
         return intent;
     }
 
-
     /**
      * android获取一个用于打开Word文件的intent
      * @param param
      * @return
      */
-    public static Intent getWordFileIntent(String param)
-    {
+    public static Intent getWordFileIntent(String param) {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -594,8 +725,7 @@ public class SystemUtils
      * @param param
      * @return
      */
-    public static Intent getExcelFileIntent(String param)
-    {
+    public static Intent getExcelFileIntent(String param) {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -610,8 +740,7 @@ public class SystemUtils
      * @param param
      * @return
      */
-    public static Intent getPptFileIntent(String param)
-    {
+    public static Intent getPptFileIntent(String param) {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

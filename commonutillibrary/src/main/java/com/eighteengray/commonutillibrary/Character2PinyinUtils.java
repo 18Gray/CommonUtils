@@ -2,9 +2,9 @@ package com.eighteengray.commonutillibrary;
 
 
 /**
- * Java汉字转换为拼音
+ * 汉字转换为拼音工具类
  */
-public class Character2PinyinUtil
+public class Character2PinyinUtils
 {
     private static int[] values = new int[]{-20319, -20317, -20304, -20295, -20292, -20283, -20265, -20257, -20242, -20230, -20051, -20036, -20032,
             -20026, -20002, -19990, -19986, -19982, -19976, -19805, -19784, -19775, -19774, -19763, -19756, -19751, -19746, -19741, -19739, -19728,
@@ -54,9 +54,9 @@ public class Character2PinyinUtil
             "zhun", "zhuo", "zi", "zong", "zou", "zu", "zuan", "zui", "zun", "zuo"};
 
     private StringBuilder buffer;
-    private static Character2PinyinUtil characterParser = new Character2PinyinUtil();
+    private static Character2PinyinUtils characterParser = new Character2PinyinUtils();
 
-    public static Character2PinyinUtil getInstance()
+    public static Character2PinyinUtils getInstance()
     {
         return characterParser;
     }

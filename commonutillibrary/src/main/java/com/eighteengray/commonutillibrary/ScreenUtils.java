@@ -16,57 +16,30 @@ import android.widget.ScrollView;
 /**
  * 屏幕相关工具类
  */
-public class ScreenUtils
-{
+public class ScreenUtils {
     /**
      * 获得屏幕宽度
      * @param context
      * @return
      */
-    public static int getScreenWidth(Context context)
-    {
+    public static int getScreenWidth(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(outMetrics);
         return outMetrics.widthPixels;
     }
 
-
     /**
      * 获得屏幕高度
      * @param context
      * @return
      */
-    public static int getScreenHeight(Context context)
-    {
+    public static int getScreenHeight(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(outMetrics);
         return outMetrics.heightPixels;
     }
-
-
-    /**
-     * 获取状态栏高度
-     * @param context
-     * @return
-     */
-    public static int getStatusBarHeight(Context context)
-    {
-        int statusHeight = -1;
-        try
-        {
-            Class<?> clazz = Class.forName("com.android.internal.R$dimen");
-            Object object = clazz.newInstance();
-            int height = Integer.parseInt(clazz.getField("status_bar_height").get(object).toString());
-            statusHeight = context.getResources().getDimensionPixelSize(height);
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return statusHeight;
-    }
-
 
 
     //屏幕截图
@@ -75,8 +48,7 @@ public class ScreenUtils
      * @param activity
      * @return
      */
-    public static Bitmap screenShotWithStatusBar(Activity activity)
-    {
+    public static Bitmap screenShotWithStatusBar(Activity activity) {
         View view = activity.getWindow().getDecorView();
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();
@@ -89,14 +61,12 @@ public class ScreenUtils
 
     }
 
-
     /**
      * 当前屏幕截图，不包含状状态栏
      * @param activity
      * @return
      */
-    public static Bitmap screenShotWithoutStatusBar(Activity activity)
-    {
+    public static Bitmap screenShotWithoutStatusBar(Activity activity) {
         View view = activity.getWindow().getDecorView();
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();
@@ -112,23 +82,20 @@ public class ScreenUtils
         return bp;
     }
 
-
     /**
      * 普通View截屏
      * @param v
      * @param fileName
      * @return
      */
-    public static Bitmap screenShotNormalView(View v, String fileName)
-    {
+    public static Bitmap screenShotNormalView(View v, String fileName) {
         v.clearFocus();
         v.setPressed(false);
         boolean willNotCache = v.willNotCacheDrawing();
         v.setWillNotCacheDrawing(false);
         int color = v.getDrawingCacheBackgroundColor();
         v.setDrawingCacheBackgroundColor(0);
-        if (color != 0)
-        {
+        if (color != 0) {
             v.destroyDrawingCache();
         }
         v.buildDrawingCache();
@@ -141,7 +108,6 @@ public class ScreenUtils
         return bitmap;
     }
 
-
     /**
      * ScrollView截屏
      * @param scrollView
@@ -149,13 +115,11 @@ public class ScreenUtils
      * @param fileName
      * @return
      */
-    public static Bitmap screenShotScrollView(ScrollView scrollView, Activity activity, String fileName)
-    {
+    public static Bitmap screenShotScrollView(ScrollView scrollView, Activity activity, String fileName) {
         int h = 0;
         Bitmap bitmap = null;
         // 获取scrollView实际高度
-        for (int i = 0; i < scrollView.getChildCount(); i++)
-        {
+        for (int i = 0; i < scrollView.getChildCount(); i++) {
             h += scrollView.getChildAt(i).getHeight();
         }
         // 创建对应大小的bitmap
@@ -165,7 +129,6 @@ public class ScreenUtils
         return bitmap;
     }
 
-
     /**
      * ListView截屏
      * @param listView
@@ -173,13 +136,11 @@ public class ScreenUtils
      * @param fileName
      * @return
      */
-    public static Bitmap screenShotListView(ListView listView, Activity activity, String fileName)
-    {
+    public static Bitmap screenShotListView(ListView listView, Activity activity, String fileName) {
         int h = 0;
         Bitmap bitmap = null;
         // 获取listView实际高度
-        for (int i = 0; i < listView.getChildCount(); i++)
-        {
+        for (int i = 0; i < listView.getChildCount(); i++) {
             h += listView.getChildAt(i).getHeight();
         }
         // 创建对应大小的bitmap

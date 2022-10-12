@@ -9,11 +9,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.View;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,21 +29,13 @@ import java.util.ArrayList;
 /**
  * 图像相关工具类
  */
-public class ImageUtils
-{
-    public static final int LEFT = 0;
-    public static final int RIGHT = 1;
-    public static final int TOP = 3;
-    public static final int BOTTOM = 4;
-    public static String bitNametime;
+public class ImageUtils {
 
-    //拍照相关
     /**
      * 调用系统拍照
      * @param activity
      */
-    public static void takeCamera(Activity activity)
-    {
+    public static void takeCamera(Activity activity) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("image/*");
@@ -51,8 +47,7 @@ public class ImageUtils
      * 调用系统相册
      * @param activity
      */
-    public static void takePhoto(Activity activity)
-    {
+    public static void takePhoto(Activity activity) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         activity.startActivityForResult(intent, 2);
     }
@@ -63,8 +58,7 @@ public class ImageUtils
      * @param uri
      * @param imagePath
      */
-    public static void takeCut(Activity aty, Uri uri, String imagePath)
-    {
+    public static void takeCut(Activity aty, Uri uri, String imagePath) {
         File f = new File(imagePath);
         if (!f.exists())
         {
@@ -105,22 +99,17 @@ public class ImageUtils
      * @param context
      * @return
      */
-    public static Bitmap getDataOnResult(Intent data, Context context)
-    {
+    public static Bitmap getDataFromResult(Intent data, Context context) {
         Bitmap bitmap = null;
         Uri uri = data.getData();
         ContentResolver cr = context.getContentResolver();
-        try
-        {
+        try {
             bitmap = BitmapFactory.decodeStream(cr.openInputStream(uri));
-        } catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return bitmap;
     }
-
-
 
 
     //图像数据大小相关
@@ -131,13 +120,11 @@ public class ImageUtils
      * @param fileCount 压缩到的图像数据大小
      * @return
      */
-    public static Bitmap compressBitmap(Bitmap image, int fileCount)
-    {
+    public static Bitmap compressBitmap(Bitmap image, int fileCount) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
         int options = 100;
-        while (baos.toByteArray().length / 1024>100)
-        {  //循环判断如果压缩后图片是否大于100kb,大于继续压缩。很傻很天真，这个toByteArray根本不能返回真的图像大小。
+        while (baos.toByteArray().length / 1024>100) {  //循环判断如果压缩后图片是否大于100kb,大于继续压缩。很傻很天真，这个toByteArray根本不能返回真的图像大小。
             baos.reset();//重置baos即清空baos
             image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
             options -= 10;//每次都减少10
@@ -154,30 +141,23 @@ public class ImageUtils
      * @param path  保存路径
      * @param name  保存名称
      */
-    public static void saveBitmap(Bitmap bitmap, String path, String name)
-    {
+    public static void saveBitmap(Bitmap bitmap, String path, String name) {
         File f = FileUtils.createFile(path, name);
         FileOutputStream fos = null;
-        try
-        {
+        try {
             fos = new FileOutputStream(f);
-        } catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-        try
-        {
+        try {
             fos.flush();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        try
-        {
+        try {
             fos.close();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -225,12 +205,10 @@ public class ImageUtils
      * @param bitmapArrayList
      * @throws Exception
      */
-    public static void unionMultiImages(String path, String name, ArrayList<Bitmap> bitmapArrayList) throws Exception
-    {
+    public static void unionMultiImages(String path, String name, ArrayList<Bitmap> bitmapArrayList) throws Exception {
         File file = FileUtils.createFile(path, name);
         FileOutputStream fos = new FileOutputStream(file);
-        for(int i = 0; i < bitmapArrayList.size(); i++)
-        {
+        for(int i = 0; i < bitmapArrayList.size(); i++) {
             Bitmap currentBitmap = bitmapArrayList.get(i);
             currentBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
         }
@@ -255,8 +233,7 @@ public class ImageUtils
      * @param requestHeight
      * @return
      */
-    public static Bitmap getBitmapFromPath(String imagePath, int imageSize, int requestWidth, int requestHeight)
-    {
+    public static Bitmap getBitmapFromPath(String imagePath, int imageSize, int requestWidth, int requestHeight) {
         Bitmap bitmap = null;
         BitmapFactory.Options options = new BitmapFactory.Options();
         File file = new File(imagePath);
@@ -265,16 +242,13 @@ public class ImageUtils
         double multiSqrt = Math.sqrt(multiple);
         int multiAbs = (int) Math.abs(multiSqrt);
         options.inSampleSize = multiAbs;
-        try
-        {
+        try {
             bitmap = BitmapFactory.decodeFile(imagePath, options);
         }
-        catch (OutOfMemoryError ooe)
-        {
+        catch (OutOfMemoryError ooe) {
             return null;
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             return null;
         }
 
@@ -284,18 +258,15 @@ public class ImageUtils
         int bitmapResultWidth = 0;
         int bitmapResultHeight = 0;
         //如果实际宽高有一个比要求宽高要大，则需要做等比缩放
-        if(bitmapActualWidth > requestWidth || bitmapActualHeight > requestHeight)
-        {
+        if(bitmapActualWidth > requestWidth || bitmapActualHeight > requestHeight) {
             //计算缩放比例，如果宽度缩放更大，则按照宽度等比缩放；如果高度缩放更大，则按照高度等比缩放
             float widthScale = bitmapActualWidth / requestWidth;
             float heightScale = bitmapActualHeight / requestHeight;
-            if(widthScale > heightScale)
-            {
+            if(widthScale > heightScale) {
                 bitmapResultWidth = requestWidth;
                 bitmapResultHeight = bitmapResultWidth * bitmapActualHeight / bitmapActualWidth;
             }
-            else
-            {
+            else {
                 bitmapResultHeight = requestHeight;
                 bitmapResultWidth = bitmapResultHeight * bitmapActualWidth / bitmapActualHeight;
             }
@@ -312,8 +283,7 @@ public class ImageUtils
      * @param height
      * @return
      */
-    public static Bitmap zoomBitmap(Bitmap bitmap, double width, double height)
-    {
+    public static Bitmap zoomBitmap(Bitmap bitmap, double width, double height) {
         Bitmap zoomBitmap = null;
         int w = bitmap.getWidth();
         int h = bitmap.getHeight();
@@ -321,11 +291,9 @@ public class ImageUtils
         float scaleWidht = ((float) width / w);
         float scaleHeight = ((float) height / h);
         matrix.postScale(scaleWidht, scaleHeight);
-        try
-        {
+        try {
             zoomBitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
         }
         return zoomBitmap;
     }
@@ -338,8 +306,7 @@ public class ImageUtils
      * @param height
      * @return
      */
-    public Bitmap zoomBitmap(String imagePath, int width, int height)
-    {
+    public Bitmap zoomBitmap(String imagePath, int width, int height) {
         Bitmap bitmap = null;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -350,16 +317,13 @@ public class ImageUtils
         int beWidth = w / width;
         int beHeight = h / height;
         int be = 1;
-        if (beWidth < beHeight)
-        {
+        if (beWidth < beHeight) {
             be = beWidth;
         }
-        else
-        {
+        else {
             be = beHeight;
         }
-        if (be <= 0)
-        {
+        if (be <= 0) {
             be = 1;
         }
         options.inSampleSize = be;
@@ -378,8 +342,7 @@ public class ImageUtils
      * @param height 截取高度
      * @return
      */
-    public static Bitmap cutBitmap(Bitmap bitmap, int x, int y, int width, int height)
-    {
+    public static Bitmap cutBitmap(Bitmap bitmap, int x, int y, int width, int height) {
         return Bitmap.createBitmap(bitmap, x, y, width, height);
     }
 
@@ -392,8 +355,7 @@ public class ImageUtils
      * @param kind
      * @return
      */
-    public static Bitmap getVideoThumbnail(String videoPath, int width, int height, int kind)
-    {
+    public static Bitmap getVideoThumbnail(String videoPath, int width, int height, int kind) {
         Bitmap bitmap = null;
         bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, kind);
         bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
@@ -414,4 +376,140 @@ public class ImageUtils
         view.draw(canvas);
         return bitmap;
     }
+
+
+
+    /// 图片格式转换
+
+    /**
+     * Bitmap转byte[]
+     * @param bm
+     * @return
+     */
+    public static byte[] bitmap2Bytes(Bitmap bm) {
+        ByteArrayOutputStream bas = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, bas);
+        return bas.toByteArray();
+    }
+
+    /**
+     * byte[]转Bitmap
+     * @param b
+     * @return
+     */
+    public static Bitmap bytes2Bimap(byte[] b) {
+        if (b.length != 0) {
+            return BitmapFactory.decodeByteArray(b, 0, b.length);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Drawable转Bitmap
+     * @param drawable
+     * @return
+     */
+    public static Bitmap drawable2Bitmap(Drawable drawable) {
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+        return bitmapDrawable.getBitmap();
+    }
+
+    /**
+     * Bitmap转Drawable
+     * @param bitmap
+     * @return
+     */
+    public static Drawable bitmap2Drawable(Bitmap bitmap) {
+        Drawable drawable = new BitmapDrawable(bitmap);
+        return drawable;
+    }
+
+    /**
+     * Bitmap转16进制字符串
+     * @param bitmap
+     * @return
+     */
+    public static String bitmap2HexString(Bitmap bitmap) {
+        String result = null;
+        ByteArrayOutputStream baos = null;
+        try {
+            if (bitmap != null) {
+                baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                baos.flush();
+                baos.close();
+                byte[] bitmapBytes = baos.toByteArray();
+                result = FormatTransformUtil.bytes2HexString(bitmapBytes);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (baos != null) {
+                    baos.flush();
+                    baos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * Bitmap转Base64 String
+     * @param bitmap
+     * @return
+     */
+    public static String bitmap2Base64String(Bitmap bitmap) {
+        String result = null;
+        ByteArrayOutputStream baos = null;
+        try {
+            if (bitmap != null) {
+                baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                baos.flush();
+                baos.close();
+                byte[] bitmapBytes = baos.toByteArray();
+                result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (baos != null) {
+                    baos.flush();
+                    baos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * Base64 String转Bitmap
+     * @param base64Data
+     * @return
+     */
+    public static Bitmap base64String2Bitmap(String base64Data) {
+        byte[] bytes = Base64.decode(base64Data, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    /**
+     * resouceId转Bitmap
+     * @return
+     */
+    public static Bitmap resouceId2Bitmap(Context context, int resouceId) {
+        Bitmap resultBitmap = null;
+        Drawable drawable = context.getResources().getDrawable(resouceId);
+        resultBitmap = drawable2Bitmap(drawable);
+        return resultBitmap;
+    }
+
 }

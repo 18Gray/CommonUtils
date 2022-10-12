@@ -7,8 +7,7 @@ import java.util.regex.Pattern;
 /**
  * 正则表达式工具类，包括常用正则表达式
  */
-public class RegularExpressionUtil
-{
+public class RegularExpressionUtil {
     //密码的强度必须包含大小写字母和数字的组合，不能使用特殊字符，长度在8-10之间
     public final static Pattern password = Pattern.compile("^(?=.*\\\\d)(?=.*[a-z])(?=.*[A-Z]).{8,10}$");
     //字符串只能是中文
@@ -53,8 +52,7 @@ public class RegularExpressionUtil
      * @param source  输入字符串
      * @return
      */
-    public static boolean patternMatch(Pattern pattern, String source)
-    {
+    public static boolean patternMatch(Pattern pattern, String source) {
         if (pattern == null)
             return false;
         return pattern.matcher(source).matches();
