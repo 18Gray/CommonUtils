@@ -1,7 +1,8 @@
-package com.eighteengray.commonutillibrary;
+package com.eighteengray.commonutil;
 
 import android.graphics.drawable.GradientDrawable;
-import android.support.annotation.ColorInt;
+
+import androidx.annotation.ColorInt;
 
 
 public class ShapeUtils {
@@ -9,7 +10,6 @@ public class ShapeUtils {
     private volatile static ShapeUtils instance =null;
 
     private ShapeUtils() {
-
     }
 
     public static ShapeUtils getInstance() {
@@ -24,8 +24,7 @@ public class ShapeUtils {
     }
 
     //无边框/圆角/单色
-    public GradientDrawable createSingleDrawableNoBorder(float radius,
-                                                         @ColorInt int backgroundColor) {
+    public GradientDrawable createSingleDrawableNoBorder(float radius, @ColorInt int backgroundColor) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setCornerRadius(radius);
         drawable.setColor(backgroundColor);
@@ -34,10 +33,7 @@ public class ShapeUtils {
 
     //无边框/圆角/渐变色/渐变形状{LINEAR_GRADIENT, RADIAL_GRADIENT, SWEEP_GRADIENT}
     //渐变方向{ TOP_BOTTOM,TR_BL,RIGHT_LEFT,BR_TL,BOTTOM_TOP,BL_TR,LEFT_RIGHT,TL_BR}
-    public GradientDrawable createMixDrawableNoBorder(float radius,
-                                                     @ColorInt int[] backgroundColor,
-                                                     int gradientType,
-                                                     GradientDrawable.Orientation orientation) {
+    public GradientDrawable createMixDrawableNoBorder(float radius, @ColorInt int[] backgroundColor, int gradientType, GradientDrawable.Orientation orientation) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setCornerRadius(radius);
         drawable.setGradientType(gradientType);
@@ -47,10 +43,7 @@ public class ShapeUtils {
     }
 
     //实线/圆角/单色/
-    public GradientDrawable createSingleDrawableFillBorder(float radius,
-                                                          int strokeWidth,
-                                                          int strokeColor,
-                                                          @ColorInt int backgroundColor) {
+    public GradientDrawable createSingleDrawableFillBorder(float radius, int strokeWidth, int strokeColor, @ColorInt int backgroundColor) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setCornerRadius(radius);
         drawable.setStroke(strokeWidth, strokeColor);
@@ -60,12 +53,7 @@ public class ShapeUtils {
 
     //实线/圆角/渐变色/渐变形状{LINEAR_GRADIENT, RADIAL_GRADIENT, SWEEP_GRADIENT}
     //渐变方向{ TOP_BOTTOM,TR_BL,RIGHT_LEFT,BR_TL,BOTTOM_TOP,BL_TR,LEFT_RIGHT,TL_BR}
-    public GradientDrawable createMixDrawableFillBorder(float radius,
-                                                       int strokeWidth,
-                                                       int strokeColor,
-                                                       @ColorInt int[] backgroundColor,
-                                                       int gradientType,
-                                                       GradientDrawable.Orientation orientation) {
+    public GradientDrawable createMixDrawableFillBorder(float radius, int strokeWidth, int strokeColor, @ColorInt int[] backgroundColor, int gradientType, GradientDrawable.Orientation orientation) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setCornerRadius(radius);
         drawable.setStroke(strokeWidth, strokeColor);
@@ -76,12 +64,7 @@ public class ShapeUtils {
     }
 
     //虚线/圆角/单色/
-    public GradientDrawable createSingleDrawableDashBorder(float radius,
-                                                          int strokeWidth,
-                                                          int strokeColor,
-                                                          float dashWidth,
-                                                          float dashGap,
-                                                          @ColorInt int backgroundColor) {
+    public GradientDrawable createSingleDrawableDashBorder(float radius, int strokeWidth, int strokeColor, float dashWidth, float dashGap, @ColorInt int backgroundColor) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setCornerRadius(radius);
         drawable.setStroke(strokeWidth, strokeColor, dashWidth, dashGap);
@@ -91,14 +74,7 @@ public class ShapeUtils {
 
     //虚线/圆角/渐变色/渐变形状{LINEAR_GRADIENT, RADIAL_GRADIENT, SWEEP_GRADIENT}
     //渐变方向{ TOP_BOTTOM,TR_BL,RIGHT_LEFT,BR_TL,BOTTOM_TOP,BL_TR,LEFT_RIGHT,TL_BR}
-    public GradientDrawable createMixDrawableDashBorder(float radius,
-                                                       int strokeWidth,
-                                                       int strokeColor,
-                                                       float dashWidth,
-                                                       float dashGap,
-                                                       @ColorInt int[] backgroundColor,
-                                                       int gradientType,
-                                                       GradientDrawable.Orientation orientation) {
+    public GradientDrawable createMixDrawableDashBorder(float radius, int strokeWidth, int strokeColor, float dashWidth, float dashGap, @ColorInt int[] backgroundColor, int gradientType, GradientDrawable.Orientation orientation) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setCornerRadius(radius);
         drawable.setStroke(strokeWidth, strokeColor, dashWidth, dashGap);
@@ -110,10 +86,7 @@ public class ShapeUtils {
 
     //实线/圆角/渐变色/渐变形状{LINEAR_GRADIENT}
     //渐变方向{LEFT_RIGHT}
-    public GradientDrawable createNomalMixDrawableFillBorder(float radius,
-                                                            int strokeWidth,
-                                                            int strokeColor,
-                                                            @ColorInt int[] backgroundColor) {
+    public GradientDrawable createNomalMixDrawableFillBorder(float radius, int strokeWidth, int strokeColor, @ColorInt int[] backgroundColor) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setCornerRadius(radius);
         drawable.setStroke(strokeWidth, strokeColor);
@@ -123,17 +96,7 @@ public class ShapeUtils {
         return drawable;
     }
 
-    public GradientDrawable createDrawable(float topLeftRadius,
-                                          float topRightRadius,
-                                          float bottomRightRadius,
-                                          float bottomLeftRadius,
-                                          int strokeWidth,
-                                          int strokeColor,
-                                          float dashWidth,
-                                          float dashGap,
-                                          int gradientType,
-                                          GradientDrawable.Orientation orientation,
-                                          @ColorInt int... backgroundColor) {
+    public GradientDrawable createDrawable(float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius, int strokeWidth, int strokeColor, float dashWidth, float dashGap, int gradientType, GradientDrawable.Orientation orientation, @ColorInt int... backgroundColor) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setCornerRadii(new float[]{topLeftRadius, topLeftRadius, topRightRadius, topRightRadius, bottomRightRadius, bottomRightRadius, bottomLeftRadius, bottomLeftRadius});
         if (strokeWidth >= 0) {

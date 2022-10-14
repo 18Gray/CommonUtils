@@ -1,4 +1,4 @@
-package com.eighteengray.commonutillibrary;
+package com.eighteengray.commonutil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -1,4 +1,4 @@
-<manifest package="com.eighteengray.commonutillibrary"
+<manifest package="com.eighteengray.commonutil"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>

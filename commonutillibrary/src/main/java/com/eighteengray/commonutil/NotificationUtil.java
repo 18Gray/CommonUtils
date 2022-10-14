@@ -1,4 +1,4 @@
-package com.eighteengray.commonutillibrary;
+package com.eighteengray.commonutil;
 
 import android.app.Activity;
 import android.app.Notification;

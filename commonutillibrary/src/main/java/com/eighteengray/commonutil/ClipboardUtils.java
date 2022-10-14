@@ -1,4 +1,4 @@
-package com.eighteengray.commonutillibrary;
+package com.eighteengray.commonutil;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
