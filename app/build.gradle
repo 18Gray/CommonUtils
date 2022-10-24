@@ -5,11 +5,6 @@ android {
     defaultConfig {
         applicationId "com.eighteengray.commonutilsdemo"
     }
-    buildTypes {
-        release {
-            shrinkResources true
-        }
-    }
 }
 
 dependencies {
