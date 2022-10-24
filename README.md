@@ -16,7 +16,7 @@ allprojects {
 ```
 dependencies {
     ...
-    compile 'com.github.18Gray:CommonUtils:v0.8'
+    compile 'com.github.18Gray:CommonUtils:1.2'
 }
 ```
 
