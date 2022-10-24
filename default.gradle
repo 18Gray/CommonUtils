@@ -49,7 +49,7 @@ android {
                 abiFilters "armeabi-v7a", "arm64-v8a"
             }
 //            shrinkResources true
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 //            signingConfig signingConfigs.release
         }
