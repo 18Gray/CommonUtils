@@ -1,5 +1,4 @@
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -12,16 +11,11 @@ android {
         multiDexEnabled true
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    viewBinding {
+        enabled = true
     }
 
-    dexOptions {
-        incremental true
-    }
-
-    viewBinding{
+    dataBinding {
         enabled = true
     }
 
@@ -43,7 +37,7 @@ android {
     buildTypes {
         debug {
             ndk {
-                abiFilters "armeabi-v7a", "x86"
+                abiFilters "armeabi-v7a", "arm64-v8a", "x86"
             }
 //            shrinkResources false
             minifyEnabled false
@@ -74,7 +68,6 @@ android {
 dependencies {
     // 系统库，libs
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.github.18Gray:CommonUtils:v0.8'
     implementation 'androidx.multidex:multidex:2.0.1'
 
     // kotlin扩展
@@ -96,4 +89,7 @@ dependencies {
     implementation rootProject.ext.dependencies["swiperefreshlayout"]
     implementation rootProject.ext.dependencies["recyclerview"]
 
+    implementation rootProject.ext.dependencies["immersionbar"]
+    implementation rootProject.ext.dependencies["immersionbar-components"]
+    implementation rootProject.ext.dependencies["immersionbar-ktx"]
 }
